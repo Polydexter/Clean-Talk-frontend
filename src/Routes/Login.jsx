@@ -1,30 +1,95 @@
-import React, { useState } from 'react'
+import React, { useState, useContext, useEffect } from 'react'
+import { useFormik } from 'formik';
+import { useNavigate } from 'react-router-dom';
+import { AuthContext } from '../contexts/AuthContext';
 
 const Login = () => {
 
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const navigate = useNavigate();
+  const [error, setError] = useState(null);
+  const { user, login } = useContext(AuthContext);
+
+  // const [username, setUsername] = useState('');
+  // const [password, setPassword] = useState('');
+
+  const formik = useFormik({
+    initialValues: {
+      username: "",
+      password: "",
+    },
+    onSubmit: async (values, { setSubmitting }) => {
+      setSubmitting(true);
+      const { username, password } = values;
+      const res = await login(username, password);
+      if (res.error || res.data) {
+        if (res.data && res.data.detail) {
+          setError(res.data.detail);
+        }
+      } else {
+        navigate("/chat");
+      }
+      setSubmitting(false);
+    },
+  });
+
+  useEffect(() => {
+    if (user) {
+      navigate("/")
+    }
+  }, [user]);
 
 
-  function handleUsernameChange(e) {
-    setUsername(e.target.value);
-  }
+  // function handleUsernameChange(e) {
+  //   setUsername(e.target.value);
+  // }
 
-  function handlePasswordChange(e) {
-    setPassword(e.target.value);
-  }
+  // function handlePasswordChange(e) {
+  //   setPassword(e.target.value);
+  // }
 
-  function handleSubmit(e) {
-    e.preventDefault();
-    console.log(username);
-    console.log(password);
-    setUsername('');
-    setPassword('');
-  }
+  // function handleSubmit(e) {
+  //   e.preventDefault();
+  //   console.log(username);
+  //   console.log(password);
+  //   setUsername('');
+  //   setPassword('');
+  // }
 
   return (
     <div>
-        <h3>Login</h3>
+        <h3>Sing in to your account</h3>
+        <form onSubmit={formik.handleSubmit}>
+          {error && <div>{JSON.stringify(error)}</div>}
+
+          <input
+            value={formik.values.username}
+            onChange={formik.handleChange}
+            type='text'
+            name='username'
+            placeholder='username'
+          />
+          <input
+            value={formik.values.password}
+            onChange={formik.handleChange}
+            type="password"
+            name='password'
+            placeholder='password'
+          />
+          <button
+          type='submit'
+        >
+          { formik.isSubmitting ? "Signing in..." : "Sign in" }
+        </button>
+        </form>
+    </div>
+  )
+}
+
+export default Login
+
+
+// Initial return value:
+{/* <h3>Login</h3>
         <form onSubmit={handleSubmit} style={{'display': 'flex', 'flexDirection': 'column', 'alignItems': 'center'}}>
           <label htmlFor='username'>Username: <br />
             <input
@@ -47,9 +112,4 @@ const Login = () => {
             />
           </label>
           <button type='submit'>Login</button>
-        </form>
-    </div>
-  )
-}
-
-export default Login
+        </form> */}
