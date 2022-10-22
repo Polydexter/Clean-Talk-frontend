@@ -1,4 +1,5 @@
 import axios from "axios";
+import jwt_decode from 'jwt-decode'
 
 // Provides a set of custom methods to handle user info and login functions
 class AuthService {
@@ -6,21 +7,28 @@ class AuthService {
         localStorage.setItem('user', JSON.stringify(data))
     }
 
-    async login(username, password) {
+    async login(email, password) {
         console.log("login triggered")
-        const response = await axios.post("http://localhost:8000/api/token/", { username, password});
+        const response = await axios.post("http://localhost:8000/api/token/", { email, password});
         if (!response.data.access) {
             return response.data
         }
-        const config = {
-            headers: {
-                "Authorization": `Bearer ${response.data.access}`,
-                'Content-Type': 'application/json'
-            }
+        // const config = {
+        //     headers: {
+        //         "Authorization": `Bearer ${response.data.access}`,
+        //         'Content-Type': 'application/json'
+        //     }
+        // }
+        // const respose2 = await axios.get('http://localhost:8000/users/details', config)
+        // console.log(respose2)
+        // const user = respose2.data.user
+        const data = jwt_decode(response.data.access)
+        const username = data.username
+        const user = {
+            'access': response.data.access,
+            'refresh': response.data.refresh,
+            'username': username
         }
-        const respose2 = await axios.get('http://localhost:8000/users/details', config)
-        console.log(respose2)
-        const user = respose2.data.user
         this.setUserInLocalStorage(user)
         return user
     }

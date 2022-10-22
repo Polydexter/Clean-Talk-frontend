@@ -1,9 +1,12 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
+import { AuthContext } from '../contexts/AuthContext';
 
 const Chat = () => {
 
+  const { user } = useContext(AuthContext);
+
   // Set a URL for websocket connection with backend domain (hardcoded for now)
-  const socketURL = 'ws://localhost:8000';
+  const backendURL = 'ws://localhost:8000';
   const [socket, setSocket] = useState(null);
   const [connectionStatus, setConnectionStatus] = useState('Connecting...');
 
@@ -12,7 +15,9 @@ const Chat = () => {
 
   // Ensure that websocket is instantiated only once
   useEffect(() => {
-    if (socket === null) {
+    if ((socket === null) && (user.access)) {
+      const socketURL = backendURL + '?token=' + user.access;
+      console.log(socketURL)
       setSocket(new WebSocket(socketURL));
     }
   }, [socket])
