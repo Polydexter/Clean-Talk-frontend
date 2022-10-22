@@ -18,9 +18,9 @@ export const AuthContextProvider = ({children}) => {
     const navigate = useNavigate();
     const [user, setUser] = useState(() => AuthService.getCurrentUser());
 
-    async function login(username, password) {
+    async function login(email, password) {
         console.log("Context method triggered")
-        const data = await AuthService.login(username, password);
+        const data = await AuthService.login(email, password);
         setUser(data);
         return data;
     }

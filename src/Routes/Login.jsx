@@ -14,18 +14,14 @@ const Login = () => {
 
   const formik = useFormik({
     initialValues: {
-      username: "",
+      email: "",
       password: "",
     },
     onSubmit: async (values, { setSubmitting }) => {
       setSubmitting(true);
-      const { username, password } = values;
-      const res = await login(username, password);
-      if (res.error || res.data) {
-        if (res.data && res.data.detail) {
-          setError(res.data.detail);
-        }
-      } else {
+      const { email, password } = values;
+      const res = await login(email, password);
+      if (res.username && res.access) {
         navigate("/chat");
       }
       setSubmitting(false);
@@ -62,11 +58,11 @@ const Login = () => {
           {error && <div>{JSON.stringify(error)}</div>}
 
           <input
-            value={formik.values.username}
+            value={formik.values.email}
             onChange={formik.handleChange}
             type='text'
-            name='username'
-            placeholder='username'
+            name='email'
+            placeholder='email'
           />
           <input
             value={formik.values.password}
