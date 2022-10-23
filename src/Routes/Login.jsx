@@ -22,7 +22,7 @@ const Login = () => {
       const { email, password } = values;
       const res = await login(email, password);
       if (res.username && res.access) {
-        navigate("/chat");
+        navigate("/conversations");
       }
       setSubmitting(false);
     },

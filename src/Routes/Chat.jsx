@@ -1,12 +1,14 @@
 import React, { useState, useEffect, useContext } from 'react'
+import { useParams } from 'react-router-dom';
 import { AuthContext } from '../contexts/AuthContext';
 
 const Chat = () => {
 
+  const { conversationName } = useParams();
   const { user } = useContext(AuthContext);
 
   // Set a URL for websocket connection with backend domain (hardcoded for now)
-  const backendURL = 'ws://localhost:8000';
+  const backendURL = `ws://localhost:8000/${conversationName}/`;
   const [socket, setSocket] = useState(null);
   const [connectionStatus, setConnectionStatus] = useState('Connecting...');
 
