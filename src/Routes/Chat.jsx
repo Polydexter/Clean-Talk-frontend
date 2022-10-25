@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react'
+import React, { useState, useEffect, useContext, useLayoutEffect } from 'react'
 import { useParams } from 'react-router-dom';
 import { AuthContext } from '../contexts/AuthContext';
 import Message from '../Components/Message';
@@ -6,7 +6,7 @@ import Message from '../Components/Message';
 const Chat = () => {
 
   const { conversationName } = useParams();
-  const { user } = useContext(AuthContext);
+  const { user, refreshTokens } = useContext(AuthContext);
 
   // Set a URL for websocket connection with backend domain (hardcoded for now)
   const backendURL = `ws://localhost:8000/${conversationName}/`;
@@ -17,13 +17,21 @@ const Chat = () => {
   const [messageHistory, setMessageHistory] = useState([]);
 
   // Ensure that websocket is instantiated only once
-  useEffect(() => {
-    if ((socket === null) && (user.access)) {
-      const socketURL = backendURL + '?token=' + user.access;
-      console.log(socketURL)
-      setSocket(new WebSocket(socketURL));
+
+  async function establishConnection() {
+    const tokens = await refreshTokens();
+    console.log("Establish connection tokens: ", tokens)
+    const socketURL = backendURL + '?token=' + tokens.access;
+    console.log("Establish connection URL: ", socketURL)
+    setSocket(new WebSocket(socketURL));
+  }
+
+  useEffect( () => {
+    if ((socket === null) && (user)) {
+      establishConnection();
     }
-  }, [socket])
+  }, [])
+  
 
   useEffect(() => {
     if (socket) {

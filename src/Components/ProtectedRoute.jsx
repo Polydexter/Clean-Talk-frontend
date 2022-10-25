@@ -5,9 +5,9 @@ import { AuthContext } from "../contexts/AuthContext";
 
 export default function ProtectedRoute({children}) {
     const { user } = useContext(AuthContext)
-    console.log(user)
     if (!user) {
         return <Navigate to='/login' replace/>
     }
+    console.log("User granted access to protected route")
     return children
 }

@@ -5,7 +5,7 @@ import { AuthContext } from '../contexts/AuthContext';
 const Navbar = () => {
   const { user, logout } = useContext(AuthContext);
   useEffect(() => {
-    console.log(user)
+    console.log("User (Navbar level): ", user)
   }, [user])
 
   return (
@@ -18,7 +18,7 @@ const Navbar = () => {
             <li><Link to='login'>Login</Link></li>
             ) : (
               <>
-                <span>Logged in as {user.username}</span>
+                <span>Logged in as {user}</span>
                 <button onClick={logout}>Logout</button>
               </>
           )}
