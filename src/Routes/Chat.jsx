@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react'
 import { useParams } from 'react-router-dom';
 import { AuthContext } from '../contexts/AuthContext';
+import Message from '../Components/Message';
 
 const Chat = () => {
 
@@ -36,7 +37,15 @@ const Chat = () => {
       };
       socket.onmessage = (e) => {
         const data = JSON.parse(e.data)
-        setMessageHistory((prev) => prev.concat(data))
+        switch (data.type) {
+          case "chat_message_echo":
+            setMessageHistory((prev) => prev.concat(data.message));
+            break;
+          case "last_20_messages":
+            setMessageHistory(data.messages);
+            break;
+        }
+        
       }
     }
   })
@@ -54,6 +63,13 @@ const Chat = () => {
         <h1>Chat</h1>
         <p>Websocket is {connectionStatus}</p>
         <br />
+        <ul>
+        {messageHistory.map((message) => (
+          <div>
+            <Message key={message.id} message={message}/>
+          </div>
+        ))}
+        </ul>
         <input
           type="text"
           name='message'
@@ -62,14 +78,6 @@ const Chat = () => {
           onChange={(e) => setMessage(e.target.value)}
         />
         <button type='submit' onClick={handleSubmitMessage}>Send</button>
-        <hr />
-        <ul>
-        {messageHistory.map((message, idx) => (
-          <div key={idx}>
-            {message.message}
-          </div>
-        ))}
-        </ul>
     </div>
   )
 }
