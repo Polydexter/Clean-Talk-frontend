@@ -20,11 +20,13 @@ const Login = () => {
     onSubmit: async (values, { setSubmitting }) => {
       setSubmitting(true);
       const { email, password } = values;
-      const res = await login(email, password);
-      if (res.username && res.access) {
+      const response = await login(email, password);
+      console.log("Outer most login (component level): ", response)
+      if (response.access && response.refresh) {
         navigate("/conversations");
       }
       setSubmitting(false);
+      setError('Login failed')
     },
   });
 
@@ -54,6 +56,7 @@ const Login = () => {
   return (
     <div>
         <h3>Sing in to your account</h3>
+        { error && <h3>{error}</h3>}
         <form onSubmit={formik.handleSubmit}>
           {error && <div>{JSON.stringify(error)}</div>}
 

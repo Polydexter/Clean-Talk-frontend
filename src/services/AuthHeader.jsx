@@ -1,12 +1,30 @@
-export default function authHeader() {
-    const localStorageUser = localStorage.getItem('user');
-    if (!localStorageUser) {
-        return {}
+
+class AuthHeader {
+    
+    localStorageUser = localStorage.getItem('user');
+
+    getAccessToken() {
+        if (!localStorageUser) {
+            return {}
+        }
+        const user = JSON.parse(localStorageUser);
+        if (user && user.access) {
+            return { Authorization: `Bearer ${user.acces}`}
+        }
+        return {};
     }
 
-    const user = JSON.parse(localStorageUser);
-    if (user && user.token) {
-        return { Authorization: `Bearer ${user.token}`}
+    getRefreshToken() {
+        if (!localStorageUser) {
+            return {}
+        }
+        const user = JSON.parse(localStorageUser);
+        if (user && user.refresh) {
+            return { Authorization: `Bearer ${user.refresh}`}
+        }
+        return {};
     }
-    return {};
+   
 }
+
+export default new AuthHeader
