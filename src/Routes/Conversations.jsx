@@ -1,7 +1,10 @@
 import React from 'react'
 import { useContext, useEffect, useState } from "react";
-import { Link } from 'react-router-dom';
 import { AuthContext } from "../contexts/AuthContext";
+import Row from 'react-bootstrap/Row'
+import Col from 'react-bootstrap/Col'
+import Button from 'react-bootstrap/Button'
+import LinkContainer from 'react-router-bootstrap/LinkContainer';
 
 const Conversations = () => {
   const { user, tokens, refreshTokens } = useContext(AuthContext);
@@ -9,7 +12,7 @@ const Conversations = () => {
   const [err, setErr] = useState('');
 
   useEffect(() => {
-    // This function should get all available users with current access token or try to refresh tokens and use a new one 
+    // Get all available users with current access token or try to refresh tokens and use a new one 
     async function fetchUsers() {
         // Request with current access token
         const res = await fetch('http://localhost:8000/users', {
@@ -17,12 +20,9 @@ const Conversations = () => {
                 Authorization: `Bearer ${tokens.access}`
             }
         });
-        console.log("Response to original request(with not refreshed tokens): ", res)
-        // If unauthorized by the server
+        // If unauthorized by the server - refresh tokens
         if (res.status === 401) {
-          // Function from AuthService. It gets new pair of tokens, sets it in storage as a current pair and returns the pair to caller
           var refreshedTokens = await refreshTokens();
-          console.log("Response to the request for refreshed tokens: ", refreshedTokens)
           // If it does not return a pair of tokens, set Error message and return
           if (!refreshedTokens.access) {
             setErr('Something whet wrong. Try to login again');
@@ -52,16 +52,22 @@ const Conversations = () => {
   }
 
   return (
-    <div>
+    <Row className='justify-content-center'>
+      <Col lg={6} md={8} sm={10} xs={12}>
         { err && <div>{err}</div>}
-        { users
-            .filter((u) => u.username !== user)
-            .map((u, idx) => (
-                <Link key={idx} to={`../chat/${createConversationName(u.username)}`}>
-                    <div key={u.username}>{u.username}</div>
-                </Link>
-            ))}
-    </div>
+        <div className='d-grid gap-2 text-center'>
+          <h3>Active users</h3>
+          { users
+              .filter((u) => u.username !== user)
+              .map((u, idx) => (
+                  <LinkContainer key={idx} to={`../chat/${createConversationName(u.username)}`}>
+                      <Button className='bg-light text-dark rounded-3 shadow-sm border-0' key={u.username}><h5>{u.username}</h5></Button>
+                  </LinkContainer>
+                  ))
+          }
+        </div>
+      </Col>
+    </Row>
   );
 }
 

@@ -4,6 +4,7 @@ class AuthHeader {
     localStorageUser = localStorage.getItem('user');
 
     getAccessToken() {
+        console.log('AuthHeader Access triggered')
         if (!localStorageUser) {
             return {}
         }
@@ -13,18 +14,6 @@ class AuthHeader {
         }
         return {};
     }
-
-    getRefreshToken() {
-        if (!localStorageUser) {
-            return {}
-        }
-        const user = JSON.parse(localStorageUser);
-        if (user && user.refresh) {
-            return { Authorization: `Bearer ${user.refresh}`}
-        }
-        return {};
-    }
-   
 }
 
 export default new AuthHeader
