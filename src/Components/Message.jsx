@@ -6,20 +6,21 @@ const Message = ({ message }) => {
   const { user } = useContext(AuthContext);
 
   function formatMessageTimestamp(timestamp) {
+    console.log(user)
+    console.log(message.from_user.username)
     const date = new Date(timestamp);
-    return date.toLocaleTimeString().slice(0, 7);
+    return date.toLocaleTimeString().slice(0, 4);
   }
 
   return (
-    <li
-        style={ user.username === message.from_user.username ? (
-                {"textAlign": "left"}
-            ) : (
-                {'textAlign': 'right'}
-            )}
-    >
-        {message.content} [{formatMessageTimestamp(message.timestamp)}]
+    <li className={`d-flex ${ user === message.from_user.username ? 'justify-content-start' : 'justify-content-end'}`}>
+      <div
+        className={`rounded-4 mb-2 px-3 pb-1 align-middle ${ user === message.from_user.username ? 'shadow-sm bg-light' : 'shadow bg-secondary text-light'}`}
+      >
+        <small>{message.content} [{formatMessageTimestamp(message.timestamp)}]</small>
+      </div>
     </li>
+    
   )
 }
 

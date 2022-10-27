@@ -2,15 +2,17 @@ import React, { useState, useContext, useEffect } from 'react'
 import { useFormik } from 'formik';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../contexts/AuthContext';
+import Form from 'react-bootstrap/Form';
+import Button from 'react-bootstrap/Button'
+import Alert from 'react-bootstrap/Alert'
+import Row from 'react-bootstrap/Row'
+import Col from 'react-bootstrap/Col'
 
 const Login = () => {
 
   const navigate = useNavigate();
   const [error, setError] = useState(null);
   const { user, login } = useContext(AuthContext);
-
-  // const [username, setUsername] = useState('');
-  // const [password, setPassword] = useState('');
 
   const formik = useFormik({
     initialValues: {
@@ -36,79 +38,44 @@ const Login = () => {
     }
   }, [user]);
 
-
-  // function handleUsernameChange(e) {
-  //   setUsername(e.target.value);
-  // }
-
-  // function handlePasswordChange(e) {
-  //   setPassword(e.target.value);
-  // }
-
-  // function handleSubmit(e) {
-  //   e.preventDefault();
-  //   console.log(username);
-  //   console.log(password);
-  //   setUsername('');
-  //   setPassword('');
-  // }
-
   return (
-    <div>
-        <h3>Sing in to your account</h3>
-        { error && <h3>{error}</h3>}
-        <form onSubmit={formik.handleSubmit}>
-          {error && <div>{JSON.stringify(error)}</div>}
-
-          <input
-            value={formik.values.email}
-            onChange={formik.handleChange}
-            type='text'
-            name='email'
-            placeholder='email'
-          />
-          <input
-            value={formik.values.password}
-            onChange={formik.handleChange}
-            type="password"
-            name='password'
-            placeholder='password'
-          />
-          <button
-          type='submit'
-        >
-          { formik.isSubmitting ? "Signing in..." : "Sign in" }
-        </button>
-        </form>
-    </div>
+    <Row className='justify-content-center'>
+      <Col lg={6} sm={8} xs={12}>
+        <h3 className='text-center'>Sing in to your account</h3>
+        { error && <Alert>{error}</Alert>}
+        <Form onSubmit={formik.handleSubmit}>
+          <Form.Group controlId='loginEmail' className='mb-3'>
+            <Form.Label>Email:</Form.Label>
+            <Form.Control
+              value={formik.values.email}
+              onChange={formik.handleChange}
+              type='email'
+              name='email'
+              placeholder='Email'
+            />
+          </Form.Group>
+          <Form.Group controlId='loginPassword' className='mb-3'>
+            <Form.Label>Password: </Form.Label>
+            <Form.Control
+              value={formik.values.password}
+              onChange={formik.handleChange}
+              type="password"
+              name='password'
+              placeholder='password'
+            />
+          </Form.Group>
+          <div className='d-grid'>
+            <Button
+            variant='light'
+            type='submit'
+            >
+              { formik.isSubmitting ? "Signing in..." : "Sign in" }
+            </Button> 
+          </div>
+        </Form>
+      </Col>
+    </Row>
   )
 }
 
 export default Login
-
-
-// Initial return value:
-{/* <h3>Login</h3>
-        <form onSubmit={handleSubmit} style={{'display': 'flex', 'flexDirection': 'column', 'alignItems': 'center'}}>
-          <label htmlFor='username'>Username: <br />
-            <input
-              id='username'
-              type="text"
-              onChange={handleUsernameChange}
-              value={username}
-              required
-              autoComplete='off'
-            />
-          </label>
-          <label htmlFor='password'>Password: <br />
-            <input
-              id='password'
-              type="password"
-              onChange={handlePasswordChange}
-              value={password}
-              required
-              autoComplete='off'
-            />
-          </label>
-          <button type='submit'>Login</button>
-        </form> */}

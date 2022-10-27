@@ -1,33 +1,35 @@
-import React, { useState, useEffect, useContext, useLayoutEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import { useParams } from 'react-router-dom';
 import { AuthContext } from '../contexts/AuthContext';
+import Row from 'react-bootstrap/Row'
+import Col from 'react-bootstrap/Col'
+import Form from 'react-bootstrap/Form'
+import Stack from 'react-bootstrap/Stack'
 import Message from '../Components/Message';
+import Button from 'react-bootstrap/Button'
 
 const Chat = () => {
 
   const { conversationName } = useParams();
   const { user, refreshTokens } = useContext(AuthContext);
 
-  // Set a URL for websocket connection with backend domain (hardcoded for now)
+  // Set a URL for websocket connection
   const backendURL = `ws://localhost:8000/${conversationName}/`;
   const [socket, setSocket] = useState(null);
-  const [connectionStatus, setConnectionStatus] = useState('Connecting...');
+  const [connectionStatus, setConnectionStatus] = useState('');
 
   const [message, setMessage] = useState('');
   const [messageHistory, setMessageHistory] = useState([]);
 
-  // Ensure that websocket is instantiated only once
-
+  // Ensure that websocket is instantiated only once per visit
   async function establishConnection() {
     const tokens = await refreshTokens();
-    console.log("Establish connection tokens: ", tokens)
     const socketURL = backendURL + '?token=' + tokens.access;
-    console.log("Establish connection URL: ", socketURL)
     setSocket(new WebSocket(socketURL));
   }
 
   useEffect( () => {
-    if ((socket === null) && (user)) {
+    if (user) {
       establishConnection();
     }
   }, [])
@@ -37,11 +39,9 @@ const Chat = () => {
     if (socket) {
       socket.onopen = () => {
         setConnectionStatus('Connected');
-        console.log('Hi, server!')
       };
       socket.onclose = () => {
         setConnectionStatus('Disconnected');
-        console.log('Bye, server!')
       };
       socket.onmessage = (e) => {
         const data = JSON.parse(e.data)
@@ -67,26 +67,28 @@ const Chat = () => {
   }
 
   return (
-    <div style={{'display': 'flex', 'flexDirection': 'column', 'alignItems': 'center'}}>
-        <h1>Chat</h1>
-        <p>Websocket is {connectionStatus}</p>
-        <br />
-        <ul>
+    <Row className='justify-content-center'>
+      <Col lg={6} md={8} sm={10} xs={12}>
+        <div className='text-center mb-3'>
+          <h3>Chat</h3>
+        </div>
+        <ul className='list-unstyled'>
         {messageHistory.map((message) => (
-          <div>
-            <Message key={message.id} message={message}/>
-          </div>
+          <Message key={message.id} message={message}/>
         ))}
         </ul>
-        <input
+        <Stack direction='horizontal' gap={3}>
+        <Form.Control className='me-auto text-wrap'
           type="text"
           name='message'
-          placeholder='message'
+          placeholder='Type your message...'
           value={message}
           onChange={(e) => setMessage(e.target.value)}
         />
-        <button type='submit' onClick={handleSubmitMessage}>Send</button>
-    </div>
+        <Button variant='outline-secondary' type='submit' onClick={handleSubmitMessage}>Send</Button>
+        </Stack>
+      </Col>
+    </Row>
   )
 }
 

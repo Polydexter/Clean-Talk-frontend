@@ -1,7 +1,12 @@
 // TODO: rewrite registration form with formik
 
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState } from 'react'
 import axios from 'axios';
+import Form from 'react-bootstrap/Form'
+import Button from 'react-bootstrap/Button'
+import Alert from 'react-bootstrap/Alert'
+import Row from 'react-bootstrap/Row'
+import Col from 'react-bootstrap/Col'
 
 const Register = () => {
 
@@ -15,8 +20,10 @@ const Register = () => {
   const submitRegistration = async(username, email, password) => {
     try {
       const response = await axios.post('http://localhost:8000/users/register/', { email, username, password });
+      setErr('')
       setSuccess(response.data.message);
     } catch(err) {
+      setSuccess('')
       setErr('Registration failed');
     }
   }
@@ -36,70 +43,82 @@ const Register = () => {
   }
 
   return (
-    <div style={{'display': 'flex', 'flexDirection': 'column', 'alignItems': 'center'}}>
-        <h3>Register</h3>
+    <Row className='justify-content-center'>
+      <Col lg={6} sm={8} xs={12}>
+        <h3 className='text-center'>Register</h3>
         { err && (
-          <div style={{'color': 'red', 'fontWeight': '600'}}>
-            <h3>{err}</h3>
-          </div>
+          <Alert variant='danger'>
+            {err}
+          </Alert>
         )}
         { success && (
-          <div style={{'color': 'green', 'fontWeight': '600'}}>
-          <h3>{success}</h3>
-        </div>
+          <Alert variant='success'>
+          {success}
+        </Alert>
         )}
-        <form onSubmit={handleSubmit}>
-            <label htmlFor='username'>
-              Username: <br />
-              <input
-                id='username'
-                type='text'
-                onChange={(e) => setUserName(e.target.value)}
-                value={username}
-                autoComplete='off'
-                required
-              />
-            </label> <br />
-            <label htmlFor='email'>
-              Email: <br />
-              <input
-                id='email'
-                type='text'
-                onChange={(e) => setEmail(e.target.value)}
-                value={email}
-                autoComplete='off'
-                required
-              />
-            </label> <br />
-            <label htmlFor='password'>
-              Password: <br />
-              <input
-                id='password'
-                type='password'
-                onChange={(e) => {
-                  setPassword(e.target.value);
-                  setErr('');
-                }}
-                value={password}
-                required
-              />
-            </label> <br />
-            <label htmlFor='confirm-password'>
-              Confirm Password: <br />
-              <input
-                id='confirm-password'
-                type='password'
-                onChange={(e) => {
-                  setConfirmPassword(e.target.value);
-                  setErr('');
-                }}
-                value={confirmPassword}
-                required
-              />
-            </label> <br />
-            <button type='submit'>Sign Up</button>
-        </form>
-    </div>
+        <Form onSubmit={handleSubmit}>
+          <Form.Group controlId='registerFormUsername' className='mb-3'>
+            <Form.Label>Username: </Form.Label>
+            <Form.Control
+              placeholder='Username'
+              type='text'
+              onChange={(e) => setUserName(e.target.value)}
+              value={username}
+              autoComplete='off'
+              required
+            />
+            <Form.Text className='text-muted'>
+              Pick a unique username
+            </Form.Text>
+          </Form.Group>
+          <Form.Group controlId='registerFormEmail' className='mb-3'>
+            <Form.Label>Email: </Form.Label>
+            <Form.Control
+              placeholder='Email'
+              type='email'
+              onChange={(e) => setEmail(e.target.value)}
+              value={email}
+              autoComplete='off'
+              required
+            />
+            <Form.Text className='text-muted'>
+              You will need it to login 
+            </Form.Text>
+          </Form.Group>
+          <Form.Group controlId='registerFormPassword' className='mb-3'>
+            <Form.Label>Password: </Form.Label>
+            <Form.Control
+              type='password'
+              placeholder='Enter your password'
+              onChange={(e) => setPassword(e.target.value)}
+              value={password}
+              autoComplete='off'
+              required
+            />
+            <Form.Text className='text-muted'>
+              At least 4 symbols 
+            </Form.Text>
+          </Form.Group>
+          <Form.Group controlId='registerFormConfirm' className='mb-3'>
+            <Form.Label>Confirm password: </Form.Label>
+            <Form.Control
+              type='password'
+              placeholder='Enter your password again'
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              value={confirmPassword}
+              autoComplete='off'
+              required
+            />
+            <Form.Text className='text-muted'>
+              Fields must match
+            </Form.Text>
+          </Form.Group>
+          <div className='d-grid'>
+          <Button variant='light' type='submit' size='sm'>Sign Up</Button>
+          </div>
+        </Form>
+      </Col>
+    </Row>
   )
 }
 

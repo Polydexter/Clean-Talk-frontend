@@ -23,19 +23,16 @@ export const AuthContextProvider = ({children}) => {
     const [tokens, setTokens] = useState(() => AuthService.getCurrentUserTokens());
 
     async function login(email, password) {
-        console.log("Context login method triggered")
+        // Call login funcion from AuthService, return a pair of tokens
         const data = await AuthService.login(email, password);
-        console.log("Response of middle login method(AuthContext level): ", data)
-        // This contains either a pair of token (to extract username)
+        // If return value contains an access token...
         if (data.access) {
-            // If login was successfull - obtain username by decoding the access token
+            // ...obtain username by decoding the access token
             const access = jwt_decode(data.access)
             const username = access.username
             setUser(username);
             setTokens({"access": data.access, "refresh": data.refresh})
-            console.log("Tokens set on Context level: ", tokens);
         }
-        // In any case it passes initial answer (tokens or error) up to the component
         return data;
     }
 
@@ -45,16 +42,14 @@ export const AuthContextProvider = ({children}) => {
         navigate("/login");
     }
 
-    // When called, sends current refresh token to API in order to get new pair of tokens.
+    // When called, sends current refresh token to API in order to get a new pair of tokens.
     async function refreshTokens() {
         const currentTokens = AuthService.getCurrentUserTokens();
-        console.log("Context. Old tokens, as obtained on the top of the function: ", currentTokens)
 
         try {
             const response = await axios.post("http://localhost:8000/api/token/refresh/", {
                 "refresh": currentTokens.refresh,
             });
-            console.log("Context function (response to request for new tokens): ", response)
             var newTokens = response.data;
 
             if (!newTokens.access) {
@@ -63,8 +58,6 @@ export const AuthContextProvider = ({children}) => {
             }
 
             AuthService.setTokensInLocalStorage(newTokens);
-            const x = AuthService.getCurrentUserTokens();
-            console.log("Context. Renewd tokens at the bottom: ", x)
 
             return newTokens
         } catch (error) {
