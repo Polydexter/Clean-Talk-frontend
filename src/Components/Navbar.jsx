@@ -23,6 +23,9 @@ const MyNavbar = () => {
           <Navbar.Collapse id='chat-navbar'>
           <Nav className='flex-grow-1'>
             <LinkContainer to='conversations'>
+              <Nav.Link>Users</Nav.Link>
+            </LinkContainer>
+            <LinkContainer to="/active_chats">
               <Nav.Link>Chats</Nav.Link>
             </LinkContainer>
             { user && <Navbar.Text>Logged in as {user}</Navbar.Text>}
