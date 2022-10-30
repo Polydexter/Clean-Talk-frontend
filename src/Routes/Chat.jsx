@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react'
+import React, { useState, useEffect, useContext, useMemo, useCallback, useRef } from 'react'
 import { useParams } from 'react-router-dom';
 import { AuthContext } from '../contexts/AuthContext';
 import Row from 'react-bootstrap/Row'
@@ -7,11 +7,13 @@ import Form from 'react-bootstrap/Form'
 import Stack from 'react-bootstrap/Stack'
 import Message from '../Components/Message';
 import Button from 'react-bootstrap/Button'
+import Spinner from 'react-bootstrap/Spinner';
+import InfiniteScroll from 'react-infinite-scroll-component';
 
 const Chat = () => {
 
   const { conversationName } = useParams();
-  const { user, refreshTokens } = useContext(AuthContext);
+  const { user, tokens, refreshTokens } = useContext(AuthContext);
 
   // Set a URL for websocket connection
   const backendURL = `ws://localhost:8000/${conversationName}/`;
@@ -20,6 +22,9 @@ const Chat = () => {
 
   const [message, setMessage] = useState('');
   const [messageHistory, setMessageHistory] = useState([]);
+
+  const [page, setPage] = useState(2);
+  const [hasMoreMessages, setHasMoreMessages] = useState(false);
 
   // Ensure that websocket is instantiated only once per visit
   async function establishConnection() {
@@ -47,16 +52,38 @@ const Chat = () => {
         const data = JSON.parse(e.data)
         switch (data.type) {
           case "chat_message_echo":
-            setMessageHistory((prev) => prev.concat(data.message));
+            setMessageHistory((prev) => [data.message, ...prev]);
             break;
           case "last_20_messages":
             setMessageHistory(data.messages);
+            setHasMoreMessages(data.has_more);
             break;
         }
         
       }
     }
   })
+
+  async function fetchMessages() {
+    console.log("Fetch Messages triggered")
+    const apiRes = await fetch(
+      `http://localhost:8000/api/messages/?conversation=${conversationName}&page=${page}`,
+      {
+        method: 'GET',
+        headers: {
+          Accept: "application/json",
+          Authorization: `Bearer ${tokens.access}`
+        }
+      }
+    );
+    console.log("Fetch messages response: ", apiRes)
+    if (apiRes.status === 200) {
+      const data = await apiRes.json();
+      setHasMoreMessages(data.next !== null);
+      setPage(page + 1);
+      setMessageHistory((prev) => prev.concat(data.results));
+    }
+  }
 
   const handleSubmitMessage = () => {
     socket.send(JSON.stringify({
@@ -72,11 +99,27 @@ const Chat = () => {
         <div className='text-center mb-3'>
           <h3>Chat</h3>
         </div>
-        <ul className='list-unstyled'>
-        {messageHistory.map((message) => (
-          <Message key={message.id} message={message}/>
-        ))}
-        </ul>
+        <div
+          id='scrollableDiv'
+          className='d-flex overflow-auto flex-column-reverse p-6 mt-3 border-secondary' // Puts scroll at the bottom
+          style={{'height': '30rem'}}
+        > 
+          <div>
+            <InfiniteScroll
+              dataLength={messageHistory.length}
+              next={fetchMessages}
+              className="d-flex flex-column-reverse" // Puts loader to the top
+              inverse={true}
+              hasMore={hasMoreMessages}
+              loader={<Spinner role='status' animation='border'/>}
+              scrollableTarget='scrollableDiv'
+            >
+              {messageHistory.map((message) => (
+                <Message key={message.id} message={message}/>
+              ))}
+            </InfiniteScroll>
+          </div>
+        </div>
         <Stack direction='horizontal' gap={3}>
         <Form.Control className='me-auto text-wrap'
           type="text"

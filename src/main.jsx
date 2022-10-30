@@ -10,7 +10,7 @@ import ProtectedRoute from './Components/ProtectedRoute';
 import { AuthContextProvider } from './contexts/AuthContext';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import MyNavbar from './Components/Navbar';
-
+import ActiveConversations from './Routes/ActiveConversations';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <Router>
@@ -32,6 +32,11 @@ ReactDOM.createRoot(document.getElementById('root')).render(
               </ProtectedRoute>
             }
           />
+          <Route path='active_chats/' element={
+            <ProtectedRoute>
+              <ActiveConversations />
+            </ProtectedRoute>
+          }/>
           <Route path='chat/:conversationName' element={
             <ProtectedRoute>
               <Chat />
