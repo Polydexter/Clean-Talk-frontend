@@ -16,7 +16,7 @@ const MyNavbar = () => {
 
   return (
     <>
-      <Navbar bg='light rounded-bottom mb-3' expand='md'>
+      <Navbar collapseOnSelect bg='light rounded-bottom mb-3' expand='md'>
         <Container fluid>
           <Navbar.Brand>CleanTalk</Navbar.Brand>
           <Navbar.Toggle aria-controls='chat-navbar'/>

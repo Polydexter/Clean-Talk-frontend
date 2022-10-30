@@ -26,6 +26,9 @@ const Chat = () => {
   const [page, setPage] = useState(2);
   const [hasMoreMessages, setHasMoreMessages] = useState(false);
 
+  const [participants, setParticipants] = useState([]);
+  const [conversation, setConversation] = useState(null);
+
   // Ensure that websocket is instantiated only once per visit
   async function establishConnection() {
     const tokens = await refreshTokens();
@@ -33,12 +36,11 @@ const Chat = () => {
     setSocket(new WebSocket(socketURL));
   }
 
-  useEffect( () => {
+  useEffect(() => {
     if (user) {
       establishConnection();
     }
-  }, [])
-  
+  }, [tokens])
 
   useEffect(() => {
     if (socket) {
@@ -58,14 +60,48 @@ const Chat = () => {
             setMessageHistory(data.messages);
             setHasMoreMessages(data.has_more);
             break;
+          case "user_join":
+            setParticipants((users) => {
+              if (!users.includes(data.user)) {
+                return [...users, data.user];
+              }
+              return users
+            });
+            break;
+          case "user_leave":
+            setParticipants((users) => {
+              const newUsers = users.filter((u) => u !== data.user);
+              return newUsers;
+            });
+            break;
+          case "online_user_list":
+            setParticipants(data.users);
+            break;
         }
         
       }
     }
   })
 
+  useEffect(() => {
+    async function fetchConversation() {
+      const apiRes = await fetch(`http://localhost:8000/api/conversations/${conversationName}/`, {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${tokens.access}`
+        }
+      });
+      if (apiRes.status === 200) {
+        const data = await apiRes.json();
+        setConversation(data);
+      }
+    }
+    fetchConversation();
+  }, [conversationName, user]);
+
   async function fetchMessages() {
-    console.log("Fetch Messages triggered")
     const apiRes = await fetch(
       `http://localhost:8000/api/messages/?conversation=${conversationName}&page=${page}`,
       {
@@ -96,9 +132,21 @@ const Chat = () => {
   return (
     <Row className='justify-content-center'>
       <Col lg={6} md={8} sm={10} xs={12}>
-        <div className='text-center mb-3'>
-          <h3>Chat</h3>
-        </div>
+        {
+          conversation && (
+            <div className='py-6 text-end'>
+              <h3 className='font-wight-bold text-secondary'>
+                Chat with {conversation.other_user.username}
+              </h3>
+              <span>
+                <small>
+                  {conversation.other_user.username} is {' '}
+                  {participants.includes(conversation.other_user.username) ? "online" : "offline" }
+                </small>
+              </span>
+            </div>
+          )
+        }
         <div
           id='scrollableDiv'
           className='d-flex overflow-auto flex-column-reverse p-6 mt-3 border-secondary' // Puts scroll at the bottom
