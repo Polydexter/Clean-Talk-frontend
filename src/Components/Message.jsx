@@ -13,7 +13,7 @@ const Message = ({ message }) => {
   return (
     <li className={`d-flex my-1 ${ user === message.from_user.username ? 'justify-content-start' : 'justify-content-end'}`}>
       <div
-        className={`rounded-4 mb-2 px-3 py-1 align-middle ${ user === message.from_user.username ? 'shadow-sm bg-light' : 'shadow bg-secondary text-light'}`}
+        className={`rounded-4 mb-2 px-3 py-1 align-middle ${ user === message.from_user.username ? ' shadow-sm bg-light' : 'bg-secondary text-light'}`}
       >
         <small>{message.content} [{formatMessageTimestamp(message.timestamp)}]</small>
       </div>
