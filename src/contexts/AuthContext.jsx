@@ -45,12 +45,14 @@ export const AuthContextProvider = ({children}) => {
     // When called, sends current refresh token to API in order to get a new pair of tokens.
     async function refreshTokens() {
         const currentTokens = AuthService.getCurrentUserTokens();
+        console.log("Refresh tokens function (step 1). Current refresh token: ", currentTokens.refresh )
 
         try {
             const response = await axios.post("http://localhost:8000/api/token/refresh/", {
                 "refresh": currentTokens.refresh,
             });
             var newTokens = response.data;
+            console.log("New tokens obtained (step 2)", newTokens)
 
             if (!newTokens.access) {
                 localStorage.removeItem('tokens');
@@ -58,6 +60,7 @@ export const AuthContextProvider = ({children}) => {
             }
 
             AuthService.setTokensInLocalStorage(newTokens);
+            console.log("New tokens as stored (step 3) in the local storage: ", AuthService.getCurrentUserTokens())
 
             return newTokens
         } catch (error) {

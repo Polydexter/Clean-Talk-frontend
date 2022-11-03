@@ -6,7 +6,7 @@ import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import Form from 'react-bootstrap/Form'
 import Stack from 'react-bootstrap/Stack'
-import Message from '../Components/Message';
+import Message from './Message';
 import Button from 'react-bootstrap/Button'
 import Spinner from 'react-bootstrap/Spinner';
 import InfiniteScroll from 'react-infinite-scroll-component';
@@ -23,6 +23,9 @@ const Chat = () => {
   const [connectionStatus, setConnectionStatus] = useState('');
 
   async function establishConnection() {
+    if (socket) {
+      socket.close()
+    }
     const tokens = await refreshTokens();
     const socketURL = backendURL + '?token=' + tokens.access;
     setSocket(new WebSocket(socketURL));
@@ -32,7 +35,7 @@ const Chat = () => {
     if (user) {
       establishConnection();
     }
-  }, [tokens])
+  }, [conversationName, tokens])
 
   // Values and handlers for  new messages
   const [message, setMessage] = useState('');
@@ -47,7 +50,7 @@ const Chat = () => {
     }));
     setMessage('');
     clearTimeout(timeout.current)
-    timoutFunction();
+    timeoutFunction();
   }
 
   const inputReference = useHotkeys(
@@ -75,7 +78,6 @@ const Chat = () => {
         }
       }
     );
-    console.log("Fetch messages response: ", apiRes)
     if (apiRes.status === 200) {
       const data = await apiRes.json();
       setHasMoreMessages(data.next !== null);
@@ -117,7 +119,7 @@ const Chat = () => {
     }
   }
 
-  function timoutFunction() {
+  function timeoutFunction() {
     setMeTyping(false);
     socket.send(JSON.stringify({
       'type': 'typing',
@@ -132,10 +134,10 @@ const Chat = () => {
         'type': 'typing',
         'typing': true,
       }));
-      timeout.current = setTimeout(timoutFunction, 5000);
+      timeout.current = setTimeout(timeoutFunction, 5000);
     } else {
       clearTimeout(timeout.current);
-      timeout.current = setTimeout(timoutFunction, 5000);
+      timeout.current = setTimeout(timeoutFunction, 5000);
     }
   }
 
@@ -184,7 +186,7 @@ const Chat = () => {
         
       }
     }
-  })
+  }, [conversation, tokens])
 
   
 

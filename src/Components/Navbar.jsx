@@ -18,14 +18,14 @@ const MyNavbar = () => {
     <>
       <Navbar collapseOnSelect bg='light rounded-bottom mb-3' expand='md'>
         <Container fluid>
-          <Navbar.Brand>CleanTalk</Navbar.Brand>
+          <Navbar.Brand href='/'>CleanTalk</Navbar.Brand>
           <Navbar.Toggle aria-controls='chat-navbar'/>
           <Navbar.Collapse id='chat-navbar'>
           <Nav className='flex-grow-1'>
-            <LinkContainer to='conversations'>
+            {/* <LinkContainer to='/'>
               <Nav.Link>Users</Nav.Link>
-            </LinkContainer>
-            <LinkContainer to="/active_chats">
+            </LinkContainer> */}
+            <LinkContainer to="/chats">
               <Nav.Link>Chats</Nav.Link>
             </LinkContainer>
             { user && <Navbar.Text>Logged in as {user}</Navbar.Text>}
@@ -48,7 +48,7 @@ const MyNavbar = () => {
           </Navbar.Collapse>
         </Container>
       </Navbar>
-      <div>
+      <div className='h-100'>
         <Outlet />
       </div>
     </>
