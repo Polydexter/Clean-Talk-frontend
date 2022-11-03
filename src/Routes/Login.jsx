@@ -1,4 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react'
+import { Link } from 'react-router-dom';
 import { useFormik } from 'formik';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../contexts/AuthContext';
@@ -25,7 +26,7 @@ const Login = () => {
       const response = await login(email, password);
       console.log("Outer most login (component level): ", response)
       if (response.access && response.refresh) {
-        navigate("/conversations");
+        navigate("/");
       }
       setSubmitting(false);
       setError('Login failed')
@@ -73,6 +74,9 @@ const Login = () => {
             </Button> 
           </div>
         </Form>
+        <div className='text-center my-1'>
+          Do not have an account? <Link to="/register">Sign up!</Link>
+        </div>
       </Col>
     </Row>
   )

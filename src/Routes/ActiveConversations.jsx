@@ -1,4 +1,5 @@
 import { useContext, useEffect, useState } from "react";
+import { Outlet } from "react-router-dom";
 import { AuthContext } from '../contexts/AuthContext'
 import Button from 'react-bootstrap/Button';
 import { LinkContainer } from "react-router-bootstrap";
@@ -46,8 +47,6 @@ const ActiveConversations = () => {
     }, [user])
 
     function createConversationName(username) {
-        console.log(username)
-        console.log(user)
         const namesAlph = [user, username].sort();
         return `${namesAlph[0]}__${namesAlph[1]}`;
     }
@@ -55,17 +54,17 @@ const ActiveConversations = () => {
     function formatMessageTimestamp(timestamp) {
         if (!timestamp) return;
         const date = new Date(timestamp);
-        return date.toLocaleTimeString().slice(0, 4);
+        return date.toLocaleTimeString().slice(0, 5);
     }
 
     return (
-        <Row className='justify-content-center'>
-            <Col lg={6} md={8} sm={10} xs={12}>
-                <h3 className="text-center mb-3">Active Conversations</h3>
+        <Row className='h-100 justify-content-start'>
+            <Col xs={4} style={{'border-right': '1px solid black'}}>
+                    <h3 className="text-center mb-3">Active Conversations</h3>
                     <div className='d-grid gap-2 text-center'>    
                         {conversations.map((c) => (
                                 <LinkContainer
-                                    to={`../chat/${createConversationName(c.other_user.username)}`}
+                                    to={`./${createConversationName(c.other_user.username)}`}
                                     key={c.other_user.username}
                                 >
                                     <Button key={c.other_user.username} className="d-flex justify-between bg-light text-dark rounded-3 shadow-sm border-0">
@@ -76,6 +75,9 @@ const ActiveConversations = () => {
                                 </LinkContainer>
                         ))}
                     </div>
+            </Col>
+            <Col>
+               <Outlet />                             
             </Col>
         </Row>
     );
