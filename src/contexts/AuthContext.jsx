@@ -30,9 +30,11 @@ export const AuthContextProvider = ({children}) => {
             // ...obtain username by decoding the access token
             const access = jwt_decode(data.access)
             const username = access.username
+            AuthService.setUserInLocalStorage(username)
             setUser(username);
             setTokens({"access": data.access, "refresh": data.refresh})
         }
+        console.log("Login (Context level). Current user: ", user)
         return data;
     }
 

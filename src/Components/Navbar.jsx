@@ -25,7 +25,7 @@ const MyNavbar = () => {
             {/* <LinkContainer to='/'>
               <Nav.Link>Users</Nav.Link>
             </LinkContainer> */}
-            <LinkContainer to="/chats">
+            <LinkContainer to="/">
               <Nav.Link>Chats</Nav.Link>
             </LinkContainer>
             { user && <Navbar.Text>Logged in as {user}</Navbar.Text>}

@@ -196,7 +196,7 @@ const Chat = () => {
 
   return (
     <Row className='justify-content-center'>
-      <Col lg={6} md={8} sm={10} xs={12}>
+      <Col md={9} sm={10} xs={12} className="flex-column-reverse pb-3">
         {
           conversation && (
             <div className='py-6 text-end'>
