@@ -34,7 +34,7 @@ const App = () => {
                 <ActiveConversations />
               </ProtectedRoute>
             }>
-              <Route index element={<div className="text-center"> &#8592; Pick a conversation</div>} />
+              <Route index element={<div className="text-center"> Pick a conversation</div>} />
               <Route 
                     path=":conversationName"
                     element={

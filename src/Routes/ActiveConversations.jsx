@@ -5,12 +5,21 @@ import Button from 'react-bootstrap/Button';
 import { LinkContainer } from "react-router-bootstrap";
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
+import { Offcanvas } from "react-bootstrap";
 
 
 const ActiveConversations = () => {
     const { user, tokens, refreshTokens } = useContext(AuthContext);
     const [conversations, setConversations ] = useState([]);
+    const [show, setShow] = useState(false);
     const [err, setErr] = useState('');
+
+    const handleCloseOffcanvas = () => setShow(false)
+    const handleShowOffcanvas = () => setShow(true)
+
+    useEffect(() => {
+        console.log("Active conversations rerendered")
+    })
 
     useEffect(() => {
         async function fetchUsers() {
@@ -58,8 +67,9 @@ const ActiveConversations = () => {
     }
 
     return (
-        <Row className='h-100 justify-content-start'>
-            <Col xs={4} style={{'border-right': '1px solid black'}}>
+        <>
+        <Row className='h-90 justify-content-start p-3'>
+            <Col xs={4} style={{'border-right': '1px solid black'}} className="d-none d-md-flex flex-column">
                     <h3 className="text-center mb-3">Active Conversations</h3>
                     <div className='d-grid gap-2 text-center'>    
                         {conversations.map((c) => (
@@ -67,7 +77,7 @@ const ActiveConversations = () => {
                                     to={`./${createConversationName(c.other_user.username)}`}
                                     key={c.other_user.username}
                                 >
-                                    <Button key={c.other_user.username} className="d-flex justify-between bg-light text-dark rounded-3 shadow-sm border-0">
+                                    <Button key={c.other_user.username} className="d-flex justify-between ml-3 bg-light text-dark rounded-3 shadow-sm border-0">
                                         <h5 className="d-inline-block">{c.other_user.username}</h5>{" "}<span className="flex-grow-1 text-end">{ c.last_message ? (
                                         <small>{c.last_message.content} {formatMessageTimestamp(c.last_message.timestamp)}</small>
                                         ) : <small>Start talking!</small>}</span>
@@ -77,9 +87,39 @@ const ActiveConversations = () => {
                     </div>
             </Col>
             <Col>
-               <Outlet />                             
+                <div className="d-grid g-2">
+                    <Button variant="outline-secondary" className="d-md-none m-3" onClick={handleShowOffcanvas}>
+                        &#8592; Chats
+                    </Button>
+                </div>
+                <Outlet />                             
             </Col>
         </Row>
+        <Offcanvas show={show} onHide={handleCloseOffcanvas} responsive="md">
+            <Offcanvas.Header closeButton>
+                <Offcanvas.Title>Active Conversations</Offcanvas.Title>
+            </Offcanvas.Header>
+            <Offcanvas.Body>
+                <div className='d-md-none d-grid gap-2 text-center'>    
+                    {conversations.map((c) => (
+                            <LinkContainer
+                                to={`./${createConversationName(c.other_user.username)}`}
+                                key={c.other_user.username}
+                            >
+                                <Button
+                                    key={c.other_user.username}
+                                    className="d-flex justify-between ml-3 bg-light text-dark rounded-3 shadow-sm border-0"
+                                    >
+                                    <h5 className="d-inline-block">{c.other_user.username}</h5>{" "}<span className="flex-grow-1 text-end">{ c.last_message ? (
+                                    <small>{c.last_message.content} {formatMessageTimestamp(c.last_message.timestamp)}</small>
+                                    ) : <small>Start talking!</small>}</span>
+                                </Button>
+                            </LinkContainer>
+                    ))}
+                </div>
+            </Offcanvas.Body>
+        </Offcanvas>
+        </>
     );
 }
 
