@@ -18,7 +18,7 @@ const Chat = () => {
   const { user, tokens, refreshTokens } = useContext(AuthContext);
 
   // Values and handlers for ws connection
-  const backendURL = `ws://localhost:8000/${conversationName}/`;
+  const backendURL = `ws://localhost:8000/chats/${conversationName}/`;
   const [socket, setSocket] = useState(null);
   const [connectionStatus, setConnectionStatus] = useState('');
 
@@ -157,6 +157,9 @@ const Chat = () => {
         switch (data.type) {
           case "chat_message_echo":
             setMessageHistory((prev) => [data.message, ...prev]);
+            socket.send(JSON.stringify({
+              'type': 'read_messages',
+            }));
             break;
           case "last_20_messages":
             setMessageHistory(data.messages);
@@ -188,7 +191,13 @@ const Chat = () => {
     }
   }, [conversation, tokens])
 
-  
+  useEffect(() => {
+    if (connectionStatus === 'Connected') {
+      socket.send(JSON.stringify({
+        'type': 'read_messages',
+      }));
+    }
+  }, [connectionStatus])
 
   useEffect(() => {
     (inputReference.current).focus();

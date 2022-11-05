@@ -1,6 +1,7 @@
 import React, { useContext, useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
 import { AuthContext } from '../contexts/AuthContext';
+import { NotificationContext } from '../contexts/NotificationContext';
 import Container from 'react-bootstrap/Container';
 import Navbar from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav';
@@ -10,9 +11,15 @@ import LinkContainer from 'react-router-bootstrap/LinkContainer';
 
 const MyNavbar = () => {
   const { user, logout } = useContext(AuthContext);
+  const { unreadMessageCount } = useContext(NotificationContext)
   useEffect(() => {
     console.log("User (Navbar level): ", user)
   }, [user])
+
+  useEffect(() => {
+    console.log("Unread messags (navbar): ", unreadMessageCount)
+  }, [unreadMessageCount])
+
 
   return (
     <>
@@ -26,7 +33,10 @@ const MyNavbar = () => {
               <Nav.Link>Users</Nav.Link>
             </LinkContainer> */}
             <LinkContainer to="/">
-              <Nav.Link>Chats</Nav.Link>
+              <Nav.Link>Chats { unreadMessageCount && (
+                    <span>{unreadMessageCount}</span>
+                  )
+                }</Nav.Link>
             </LinkContainer>
             { user && <Navbar.Text>Logged in as {user}</Navbar.Text>}
               { 
