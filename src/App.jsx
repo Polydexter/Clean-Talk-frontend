@@ -12,6 +12,7 @@ import Login from './Routes/Login';
 import Navbar from './Components/Navbar';
 import ProtectedRoute from './Components/ProtectedRoute';
 import { AuthContextProvider } from './contexts/AuthContext';
+import { NotificationContextProvider } from "./contexts/NotificationContext";
 
 
 const App = () => {
@@ -23,7 +24,9 @@ const App = () => {
           path='/'
           element={
             <AuthContextProvider>
-              <Navbar />
+              <NotificationContextProvider>
+                <Navbar />
+              </NotificationContextProvider>
             </AuthContextProvider>
           }
         >
@@ -31,7 +34,7 @@ const App = () => {
             path=""
             element={
               <ProtectedRoute>
-                <ActiveConversations />
+                  <ActiveConversations />
               </ProtectedRoute>
             }>
               <Route index element={<div className="text-center"> Pick a conversation</div>} />
