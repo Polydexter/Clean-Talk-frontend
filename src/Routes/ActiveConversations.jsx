@@ -1,6 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
 import { AuthContext } from '../contexts/AuthContext'
+import { NotificationContext } from "../contexts/NotificationContext";
 import Button from 'react-bootstrap/Button';
 import { LinkContainer } from "react-router-bootstrap";
 import Row from 'react-bootstrap/Row'
@@ -9,6 +10,7 @@ import { Offcanvas } from "react-bootstrap";
 
 
 const ActiveConversations = () => {
+    const { unreadMessageCount } = useContext(NotificationContext)
     const { user, tokens, refreshTokens } = useContext(AuthContext);
     const [conversations, setConversations ] = useState([]);
     const [show, setShow] = useState(false);
@@ -50,10 +52,11 @@ const ActiveConversations = () => {
                 return;
             }
             const data = await res.json();
+            console.log("Fetch conversations data: ", data)
             setConversations(data)
         }
         fetchUsers();
-    }, [user])
+    }, [unreadMessageCount])
 
     function createConversationName(username) {
         const namesAlph = [user, username].sort();
@@ -79,7 +82,7 @@ const ActiveConversations = () => {
                                 >
                                     <Button key={c.other_user.username} className="d-flex justify-between ml-3 bg-light text-dark rounded-3 shadow-sm border-0">
                                         <h5 className="d-inline-block">{c.other_user.username}</h5>{" "}<span className="flex-grow-1 text-end">{ c.last_message ? (
-                                        <small>{c.last_message.content} {formatMessageTimestamp(c.last_message.timestamp)}</small>
+                                        <small>{c.last_message.content} {formatMessageTimestamp(c.last_message.timestamp)} {c.unread_count}</small>
                                         ) : <small>Start talking!</small>}</span>
                                     </Button>
                                 </LinkContainer>
@@ -111,7 +114,7 @@ const ActiveConversations = () => {
                                     className="d-flex justify-between ml-3 bg-light text-dark rounded-3 shadow-sm border-0"
                                     >
                                     <h5 className="d-inline-block">{c.other_user.username}</h5>{" "}<span className="flex-grow-1 text-end">{ c.last_message ? (
-                                    <small>{c.last_message.content} {formatMessageTimestamp(c.last_message.timestamp)}</small>
+                                    <small>{c.last_message.content} {formatMessageTimestamp(c.last_message.timestamp)} {c.unread_count}</small>
                                     ) : <small>Start talking!</small>}</span>
                                 </Button>
                             </LinkContainer>
