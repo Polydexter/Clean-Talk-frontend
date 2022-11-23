@@ -24,7 +24,6 @@ const Login = () => {
       setSubmitting(true);
       const { email, password } = values;
       const response = await login(email, password);
-      console.log("Outer most login (component level): ", response)
       if (response.access && response.refresh) {
         navigate("/");
       }

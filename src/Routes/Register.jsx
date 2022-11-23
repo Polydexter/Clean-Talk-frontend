@@ -66,6 +66,7 @@ const Register = () => {
               value={username}
               autoComplete='off'
               required
+              className="account-form"
             />
             <Form.Text className='text-muted'>
               Pick a unique username
